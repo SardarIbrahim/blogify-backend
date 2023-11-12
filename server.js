@@ -37,12 +37,6 @@ const limiter = rateLimit({
 
 app.use(limiter)
 
-app.use(
-  cors({
-    origin: 'https://blogify-world.netlify.app',
-  })
-)
-
 // cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -53,6 +47,12 @@ cloudinary.config({
 app.use(express.json({ limit: '20mb' }))
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
+
+app.use(
+  cors({
+    origin: 'https://blogify-world.netlify.app',
+  })
+)
 
 // errors
 import errorMiddleware from './middlewares/errorMiddleware.js'
