@@ -2,6 +2,13 @@ import express from 'express'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 
+import rateLimit from 'express-rate-limit'
+import helmet from 'helmet'
+import mongoSanitize from 'express-mongo-sanitize'
+import xssClean from 'xss-clean'
+import hpp from 'hpp'
+import cors from 'cors'
+
 import cloudinary from 'cloudinary'
 
 const app = express()
@@ -12,6 +19,29 @@ import connectDb from './database/db.js'
 // global middlewares
 dotenv.config()
 import 'express-async-errors'
+
+// sanitize the data
+app.use(mongoSanitize())
+
+// prevent xss-attacks
+app.use(xssClean())
+
+// prevent parameter pollution
+app.use(hpp())
+
+// Rate Limiting -> 150 req per user in 10 mints
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 150,
+})
+
+app.use(limiter)
+
+app.use(
+  cors({
+    origin: 'https://blogify-world.netlify.app',
+  })
+)
 
 // cloudinary
 cloudinary.config({
